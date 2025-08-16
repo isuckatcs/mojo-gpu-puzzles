@@ -777,7 +777,7 @@ Now that you've learned the debugging workflow, here's your **quick reference gu
 
 ### Execution control
 ```bash
-(lldb) run                    # Launch your program
+(lldb) run                   # Launch your program
 (lldb) continue              # Resume execution (alias: c)
 (lldb) step                  # Step into functions (source level)
 (lldb) next                  # Step over functions (source level)
@@ -786,17 +786,17 @@ Now that you've learned the debugging workflow, here's your **quick reference gu
 
 ### Breakpoint management
 ```bash
-(lldb) br set -n main        # Set breakpoint at main function
+(lldb) br set -n main              # Set breakpoint at main function
 (lldb) br set -n function_name     # Set breakpoint at any function
-(lldb) br list               # Show all breakpoints
-(lldb) br delete 1           # Delete breakpoint #1
-(lldb) br disable 1          # Temporarily disable breakpoint #1
+(lldb) br list                     # Show all breakpoints
+(lldb) br delete 1                 # Delete breakpoint #1
+(lldb) br disable 1                # Temporarily disable breakpoint #1
 ```
 
 ### Variable inspection
 ```bash
 (lldb) print variable_name   # Show variable value
-(lldb) print pointer[offset]        # Dereference pointer
+(lldb) print pointer[offset] # Dereference pointer
 (lldb) print array[0]@4      # Show first 4 array elements
 ```
 
@@ -906,17 +906,17 @@ You didn't just read about GPU debugging - you **experienced it**:
 **Essential commands** (for daily debugging):
 ```bash
 # GPU thread inspection
-(cuda-gdb) info cuda threads          # See all threads
-(cuda-gdb) cuda thread (0,0,0)        # Switch threads
-(cuda-gdb) print i                    # Local thread index (thread_idx.x equivalent)
+(cuda-gdb) info cuda threads               # See all threads
+(cuda-gdb) cuda thread (0,0,0)             # Switch threads
+(cuda-gdb) print i                         # Local thread index (thread_idx.x equivalent)
 
 # Smart breakpoints (using local variables since GPU built-ins don't work)
-(cuda-gdb) break kernel if i == 0      # Focus on thread 0
+(cuda-gdb) break kernel if i == 0          # Focus on thread 0
 (cuda-gdb) break kernel if array[i] > 100  # Focus on data conditions
 
 # Memory debugging
-(cuda-gdb) print array[i]              # Thread-specific data using local variable
-(cuda-gdb) print array[0]@4            # Array segments: {{val1}, {val2}, {val3}, {val4}}
+(cuda-gdb) print array[i]                  # Thread-specific data using local variable
+(cuda-gdb) print array[0]@4                # Array segments: {{val1}, {val2}, {val3}, {val4}}
 ```
 
 ---
