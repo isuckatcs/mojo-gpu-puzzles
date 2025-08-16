@@ -35,7 +35,7 @@ The main function will handle the necessary host-side synchronization between th
 The key to this puzzle is understanding that [barrier](https://docs.modular.com/mojo/stdlib/gpu/sync/barrier/) only synchronizes threads within a block, not across blocks. For cross-block synchronization, you need to use host-level synchronization:
 
 ```mojo
-{{#include ../../../solutions/p14/p14.mojo:prefix_sum_complete_block_level_sync}}
+{{#include ../../../problems/p14/p14.mojo:prefix_sum_complete_block_level_sync}}
 ```
 
 <details>
@@ -105,14 +105,14 @@ To test your solution, run the following command in your terminal:
   <div class="tab-content">
 
 ```bash
-uv run poe p14 --complete
+uv run poe p14 --block-boundary
 ```
 
   </div>
   <div class="tab-content">
 
 ```bash
-pixi run p14 --complete
+pixi run p14 --block-boundary
 ```
 
   </div>
