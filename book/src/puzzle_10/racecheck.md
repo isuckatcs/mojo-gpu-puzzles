@@ -110,7 +110,7 @@ AssertionError: `left == right` comparison failed:
 | **Timing** | Deterministic hang | Non-deterministic results |
 | **Root Cause** | Synchronization logic error | Unsynchronized data access |
 | **Detection Tool** | `synccheck` | `racecheck` |
-| **Example** | [Puzzle 09: Third case](../puzzle_09/third_case.md) barrier deadlock | Our shared memory `+=` operation |
+| **Example** | [Puzzle 09: Third Case](../puzzle_09/third_case.md) barrier deadlock | Our shared memory `+=` operation |
 
 **In our specific case:**
 - **Program completes** → No deadlock (threads don't get stuck)
