@@ -19,8 +19,28 @@ fn dot_product(
     b: UnsafePointer[Scalar[dtype]],
     size: Int,
 ):
-    # FILL ME IN (roughly 13 lines)
-    ...
+    i = thread_idx.x
+    shared = stack_allocation[
+        TPB, Scalar[dtype], address_space = AddressSpace.SHARED
+    ]()
+
+    shared[i] = a[i] * b[i]
+
+    barrier()
+
+    splitAt = size // 2
+
+    while True:
+        if i >= splitAt:
+            break
+
+        shared[i] += shared[i + splitAt]
+        splitAt //= 2
+
+        barrier()
+
+    if i == 0:
+        output[0] = shared[0]
 
 
 # ANCHOR_END: dot_product
