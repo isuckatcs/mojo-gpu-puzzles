@@ -24,8 +24,45 @@ fn softmax_gpu_kernel[
     output: LayoutTensor[mut=True, dtype, layout],
     input: LayoutTensor[mut=False, dtype, layout],
 ):
-    # FILL IN (roughly 31 lines)
-    ...
+    local_i = thread_idx.x
+
+    if local_i >= input_size:
+        return
+
+    shared_max = tb[dtype]().row_major[TPB]().shared().alloc()
+    shared_sum = tb[dtype]().row_major[TPB]().shared().alloc()
+
+    shared_max[local_i] = input[local_i]
+    shared_sum[local_i] = input[local_i]
+
+    barrier()
+
+    stride = input_size // 2
+    while stride > 0:
+        if local_i < stride:
+            shared_max[local_i] = max(
+                shared_max[local_i], shared_max[local_i + stride]
+            )
+
+        barrier()
+
+        stride //= 2
+
+    shared_sum[local_i] = exp(shared_sum[local_i] - shared_max[0])
+    nominator = shared_sum[local_i]
+
+    barrier()
+
+    stride = input_size // 2
+    while stride > 0:
+        if local_i < stride:
+            shared_sum[local_i] += shared_sum[local_i + stride]
+
+        barrier()
+
+        stride //= 2
+
+    output[local_i] = nominator / shared_sum[0]
 
 
 # ANCHOR_END: softmax_gpu_kernel
@@ -40,8 +77,16 @@ fn softmax_cpu_kernel[
     output: LayoutTensor[dtype, layout, MutableAnyOrigin],
     input: LayoutTensor[dtype, layout, MutableAnyOrigin],
 ):
-    # FILL IN (roughly 10 lines)
-    ...
+    max_elem = input[0]
+    for i in range(input_size):
+        max_elem = max(max_elem, input[i])
+
+    var denominator: input.element_type = 0
+    for i in range(input_size):
+        denominator += exp(input[i] - max_elem)
+
+    for i in range(input_size):
+        output[i] = exp(input[i] - max_elem) / denominator
 
 
 # ANCHOR_END: softmax_cpu_kernel
