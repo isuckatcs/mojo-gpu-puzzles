@@ -25,7 +25,15 @@ fn naive_matmul[
 ):
     row = block_dim.y * block_idx.y + thread_idx.y
     col = block_dim.x * block_idx.x + thread_idx.x
-    # FILL ME IN (roughly 6 lines)
+
+    if row >= size or col >= size:
+        return
+
+    var sum: output.element_type = 0
+    for k in range(a.shape[1]()):
+        sum += a[row, k] * b[k, col]
+
+    output[row, col] = sum
 
 
 # ANCHOR_END: naive_matmul
@@ -43,7 +51,25 @@ fn single_block_matmul[
     col = block_dim.x * block_idx.x + thread_idx.x
     local_row = thread_idx.y
     local_col = thread_idx.x
-    # FILL ME IN (roughly 12 lines)
+
+    a_shared = tb[dtype]().row_major[TPB, TPB]().shared().alloc()
+    b_shared = tb[dtype]().row_major[TPB, TPB]().shared().alloc()
+
+    if row >= size or col >= size:
+        return
+
+    a_shared[local_row, local_col] = a[row, col]
+    b_shared[local_row, local_col] = b[row, col]
+
+    barrier()
+
+    var sum: output.element_type = 0
+
+    @parameter
+    for k in range(size):
+        sum += a_shared[row, k] * b_shared[k, col]
+
+    output[row, col] = sum
 
 
 # ANCHOR_END: single_block_matmul
@@ -66,7 +92,27 @@ fn matmul_tiled[
     local_col = thread_idx.x
     tiled_row = block_idx.y * TPB + thread_idx.y
     tiled_col = block_idx.x * TPB + thread_idx.x
-    # FILL ME IN (roughly 20 lines)
+
+    a_shared = tb[dtype]().row_major[TPB, TPB]().shared().alloc()
+    b_shared = tb[dtype]().row_major[TPB, TPB]().shared().alloc()
+
+    if tiled_row >= size or tiled_col >= size:
+        return
+
+    var sum: output.element_type = 0
+    for i in range(size // TPB):
+        a_shared[local_row, local_col] = a[tiled_row, local_col + i * TPB]
+        b_shared[local_row, local_col] = b[local_row + i * TPB, tiled_col]
+
+        barrier()
+
+        @parameter
+        for k in range(TPB):
+            sum += a_shared[local_row, k] * b_shared[k, local_col]
+
+    barrier()
+
+    output[tiled_row, tiled_col] = sum
 
 
 # ANCHOR_END: matmul_tiled
