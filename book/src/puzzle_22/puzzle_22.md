@@ -2,7 +2,7 @@
 
 > ## Kernel fusion and autograd integration
 >
-> We're continuing Part IV with a focus on **kernel fusion** and **autograd integration**.
+> We're continuing Part V with a focus on **kernel fusion** and **autograd integration**.
 >
 > Building on [Puzzle 21](../puzzle_21/puzzle_21.md), you'll now explore how to combine multiple operations into a single efficient kernel and integrate it with PyTorch's autograd system. You'll learn:
 > - How kernel fusion improves performance in both forward and backward passes
