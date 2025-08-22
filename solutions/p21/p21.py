@@ -44,7 +44,7 @@ def embedding_mojo_2d(indices: torch.Tensor, weights: torch.Tensor) -> torch.Ten
 
 
 if __name__ == "__main__":
-    print("Puzzle 19: Mojo Embedding Kernel Comparison")
+    print("Puzzle 21: Mojo Embedding Kernel Comparison")
     print("=" * 70)
     print()
 
